@@ -9,6 +9,7 @@ module.exports = {
       colors: {
         tripod: {
           DEFAULT: "#4c628a",
+          900: "#23305a",
         },
       },
     },
