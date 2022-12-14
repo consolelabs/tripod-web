@@ -1,7 +1,11 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import cln from "classnames";
+import { clamp } from "../utils";
+import { useGameContext } from "../contexts/game";
+import { mappings } from "../constants/mappings";
 
+const size = 6;
 const ratio = 1280 / 1300;
 const chars = ["a", "b", "c", "d", "e", "f"];
 
@@ -10,6 +14,75 @@ type Props = {
 };
 
 export const Board = ({ showGridText = false }: Props) => {
+  const { game, renderCount, put } = useGameContext();
+
+  const [selectedCell, setSelectedCell] = useState([0, 0]);
+  const selectedCellRef = useRef(selectedCell);
+
+  const onCellClick = (rowIndex: number, colIndex: number) => {
+    selectedCellRef.current = [rowIndex, colIndex];
+    put(selectedCellRef.current[1], selectedCellRef.current[0]);
+  };
+
+  useEffect(() => {
+    selectedCellRef.current = selectedCell;
+  }, [selectedCell]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case "ArrowUp": {
+          setSelectedCell((o) => [
+            clamp(0, size - 1, o[0] - 1),
+            clamp(0, size - 1, o[1]),
+          ]);
+          break;
+        }
+        case "ArrowDown": {
+          setSelectedCell((o) => [
+            clamp(0, size - 1, o[0] + 1),
+            clamp(0, size - 1, o[1]),
+          ]);
+          break;
+        }
+        case "ArrowLeft": {
+          setSelectedCell((o) => [
+            clamp(0, size - 1, o[0]),
+            clamp(0, size - 1, o[1] - 1),
+          ]);
+          break;
+        }
+        case "ArrowRight": {
+          setSelectedCell((o) => [
+            clamp(0, size - 1, o[0]),
+            clamp(0, size - 1, o[1] + 1),
+          ]);
+          break;
+        }
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6": {
+        }
+        case "Enter":
+        case " ": {
+          put(selectedCellRef.current[1], selectedCellRef.current[0]);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [put]);
+
   return (
     <div className="relative">
       <div style={{ paddingTop: `calc(100% * ${ratio})` }}>
@@ -20,32 +93,45 @@ export const Board = ({ showGridText = false }: Props) => {
           alt=""
         />
       </div>
-      <div
-        style={{}}
-        className="font-medium p-[7%] text-white/30 absolute top-0 left-0 h-full w-full grid grid-cols-6 grid-rows-6"
-      >
-        {Array(36)
-          .fill(0)
-          .map((_, i) => {
-            const text = `${chars[i % 6]}${6 - Math.floor(i / 6)}`;
+      <div className="font-medium p-[7%] text-white/30 absolute top-0 left-0 h-full w-full grid grid-cols-6 grid-rows-6">
+        {game.state.board.map((row, rowIndex) => {
+          return row.map((col, colIndex) => {
+            const text = `${chars[colIndex]}${rowIndex + 1}`;
             return (
               <div
-                key={`grid-${text}`}
+                key={`grid-${text}-${renderCount}`}
                 className={cln(
-                  "relative py-0.5 px-1 w-full h-full flex items-start justify-end",
+                  "cell relative py-0.5 px-1 w-full h-full flex items-start justify-end",
                   {
-                    "border-b border-tripod-900/70": 36 - i > 6,
-                    "border-r border-tripod-900/70": i % 6 !== 5,
+                    "border-b border-tripod-900/70": rowIndex !== 5,
+                    "border-r border-tripod-900/70": colIndex !== 5,
+                    selected:
+                      selectedCell[0] === rowIndex &&
+                      selectedCell[1] === colIndex,
                   }
                 )}
+                onClick={() => onCellClick(rowIndex, colIndex)}
               >
-                {i === 0 && (
+                {rowIndex === 0 && colIndex === 0 && (
                   <Image src="/disk.png" width={200} height={200} alt="" />
                 )}
-                {showGridText && <span>{text}</span>}
+                {col.id > 0 && (
+                  <Image
+                    src={`/pieces/${mappings[col.id].image}`}
+                    width={200}
+                    height={200}
+                    alt=""
+                  />
+                )}
+                {showGridText && (
+                  <span className="absolute top-0 right-0 m-2 rounded-full text-xs flex items-center justify-center">
+                    {text}
+                  </span>
+                )}
               </div>
             );
-          })}
+          });
+        })}
       </div>
     </div>
   );
