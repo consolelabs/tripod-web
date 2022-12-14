@@ -4,6 +4,9 @@ import cln from "classnames";
 import { clamp } from "../utils";
 import { useGameContext } from "../contexts/game";
 import { mappings } from "../constants/mappings";
+import background from "../public/background.png";
+import disk from "../public/disk.png";
+import { PieceEnum } from "triple-pod-game-engine";
 
 const size = 6;
 const ratio = 1280 / 1300;
@@ -84,43 +87,55 @@ export const Board = ({ showGridText = false }: Props) => {
   }, [put]);
 
   return (
-    <div className="relative">
+    <div className="relative aspect-square">
       <div style={{ paddingTop: `calc(100% * ${ratio})` }}>
         <Image
-          src="/background.png"
+          src={background}
           fill
           style={{ objectFit: "contain" }}
           alt=""
+          priority
         />
       </div>
       <div className="font-medium p-[7%] text-white/30 absolute top-0 left-0 h-full w-full grid grid-cols-6 grid-rows-6">
         {game.state.board.map((row, rowIndex) => {
           return row.map((col, colIndex) => {
             const text = `${chars[colIndex]}${rowIndex + 1}`;
+            const isEmpty = col.id === PieceEnum.EMPTY;
             return (
               <div
                 key={`grid-${text}-${renderCount}`}
                 className={cln(
-                  "cell relative py-0.5 px-1 w-full h-full flex items-start justify-end",
+                  "cell relative w-full h-full flex items-start justify-end",
                   {
                     "border-b border-tripod-900/70": rowIndex !== 5,
                     "border-r border-tripod-900/70": colIndex !== 5,
-                    selected:
-                      selectedCell[0] === rowIndex &&
-                      selectedCell[1] === colIndex,
+                    // selected:
+                    //   selectedCell[0] === rowIndex &&
+                    //   selectedCell[1] === colIndex,
                   }
                 )}
                 onClick={() => onCellClick(rowIndex, colIndex)}
               >
                 {rowIndex === 0 && colIndex === 0 && (
-                  <Image src="/disk.png" width={200} height={200} alt="" />
+                  <Image src={disk} width={200} height={200} alt="" />
                 )}
                 {col.id > 0 && (
                   <Image
-                    src={`/pieces/${mappings[col.id].image}`}
+                    src={mappings[col.id].image}
                     width={200}
                     height={200}
                     alt=""
+                  />
+                )}
+                {isEmpty && (
+                  <Image
+                    className="absolute opacity-0 transition-opacity duration-75 ease-out"
+                    width={200}
+                    height={200}
+                    src={mappings[game.state.currentPiece.id].image}
+                    id="currentPiece"
+                    alt="current piece"
                   />
                 )}
                 {showGridText && (
