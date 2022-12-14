@@ -5,6 +5,7 @@ import { Guides } from "../components/Guides";
 import { Shop } from "../components/Shop";
 import { mappings } from "../constants/mappings";
 import { useGameContext } from "../contexts/game";
+import coins from "../public/coins.png";
 
 const pointFormat = new Intl.NumberFormat().format;
 
@@ -23,14 +24,14 @@ export default function Home() {
       <div className="absolute w-full h-full flex items-center">
         <div className="flex flex-wrap max-w-[960px] w-full mx-auto">
           <div className="w-full text-white text-xs md:text-xl space-x-1 flex">
-            <div className="px-3 py-2 rounded-md bg-tripod-900/70 w-1/3">
-              <div className="flex items-center justify-between h-full">
+            <div className="rounded-md bg-tripod-900/70 w-1/3">
+              <div className="px-3 py-2 flex items-center justify-between h-full">
                 <span>Next</span>
                 <Image
-                  src={`/pieces/${mappings[game.state.currentPiece.id].image}`}
-                  width={24}
-                  height={24}
-                  alt="coins"
+                  src={mappings[game.state.currentPiece.id].image}
+                  width={28}
+                  height={28}
+                  alt="next piece"
                   key={renderCount}
                 />
               </div>
@@ -44,7 +45,7 @@ export default function Home() {
             <div className="px-3 py-2 rounded-md bg-tripod-900/70 w-1/3">
               <div className="flex items-center justify-between h-full">
                 <span className="flex items-center space-x-2">
-                  <Image src="/coins.png" width={20} height={20} alt="coins" />
+                  <Image src={coins} width={20} height={20} alt="coins" />
                   <span key={renderCount}>{pointFormat(game.state.coins)}</span>
                 </span>
                 <span>Coins</span>

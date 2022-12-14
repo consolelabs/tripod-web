@@ -48,6 +48,11 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
+"@fontsource/istok-web@^4.5.11":
+  version "4.5.11"
+  resolved "https://registry.yarnpkg.com/@fontsource/istok-web/-/istok-web-4.5.11.tgz#19ea6bd5d3a123d1552bfb9762896e9dfce87aa7"
+  integrity sha512-zufosl3Sm61IiupALIpuvxy7vmuA1HYPid0BWT50n8hd9JhC2dEHw3g51kbWswmpjA3jQZoFGBKpInl2Nd7Wjw==
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.7.tgz#38aec044c6c828f6ed51d5d7ae3d9b9faf6dbb0f"

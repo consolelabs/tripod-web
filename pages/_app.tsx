@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import "@fontsource/istok-web";
 import type { AppProps } from "next/app";
 import { GameContextProvider } from "../contexts/game";
 
