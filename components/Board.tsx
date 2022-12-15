@@ -1,14 +1,12 @@
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
 import cln from "classnames";
-import { clamp } from "../utils";
 import { useGameContext } from "../contexts/game";
 import { mappings } from "../constants/mappings";
 import background from "../public/background.webp";
 import disk from "../public/disk.webp";
-import { PieceEnum } from "triple-pod-game-engine";
+import { Piece, PieceEnum } from "triple-pod-game-engine";
 
-const size = 6;
 const chars = ["a", "b", "c", "d", "e", "f"];
 
 type Props = {
@@ -16,74 +14,94 @@ type Props = {
 };
 
 export const Board = ({ showGridText = false }: Props) => {
-  const { game, renderCount, put } = useGameContext();
+  const {
+    game,
+    renderCount,
+    selectedCells,
+    hoveredCell,
+    setHoveredCell,
+    put,
+    use,
+    swap,
+    setSelectedCells,
+  } = useGameContext();
 
-  const [selectedCell, setSelectedCell] = useState([0, 0]);
-  const selectedCellRef = useRef(selectedCell);
+  const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
 
-  const onCellClick = (rowIndex: number, colIndex: number) => {
-    selectedCellRef.current = [rowIndex, colIndex];
-    put(selectedCellRef.current[1], selectedCellRef.current[0]);
+  const onCellClick = ({
+    x,
+    y,
+    isEmpty,
+  }: {
+    x: number;
+    y: number;
+    isEmpty: boolean;
+  }) => {
+    if (!game) {
+      return;
+    }
+
+    const currentPos = [x, y];
+
+    if (x === 0 && y === 0) {
+      console.log("swap", game.state);
+      swap();
+
+      return;
+    }
+
+    switch (game.state.currentPiece.id) {
+      case PieceEnum.AIRDROPPER: {
+        if (selectedCells.length === 0 && !isEmpty) {
+          setSelectedCells([currentPos]);
+          setPieceToPut(game.state.board[y][x]);
+        }
+
+        if (selectedCells.length === 1) {
+          use(PieceEnum.AIRDROPPER, {
+            target: selectedCells[0],
+            dest: currentPos,
+          });
+        }
+
+        break;
+      }
+      case PieceEnum.TELEPORT_PORTAL: {
+        if (isEmpty) {
+          break;
+        }
+
+        if (selectedCells.length === 0) {
+          setSelectedCells([currentPos]);
+        } else {
+          use(PieceEnum.TELEPORT_PORTAL, {
+            posA: selectedCells[0],
+            posB: currentPos,
+          });
+        }
+
+        break;
+      }
+      case PieceEnum.MEGA_BOMB: {
+        use(PieceEnum.MEGA_BOMB, { pos: currentPos });
+        break;
+      }
+      case PieceEnum.BOMB: {
+        use(PieceEnum.BOMB, { pos: currentPos });
+        break;
+      }
+      default: {
+        if (isEmpty || pieceToPut?.id === PieceEnum.ROBOT) {
+          put(currentPos[0], currentPos[1]);
+        }
+        break;
+      }
+    }
   };
 
   useEffect(() => {
-    selectedCellRef.current = selectedCell;
-  }, [selectedCell]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      switch (event.key) {
-        case "ArrowUp": {
-          setSelectedCell((o) => [
-            clamp(0, size - 1, o[0] - 1),
-            clamp(0, size - 1, o[1]),
-          ]);
-          break;
-        }
-        case "ArrowDown": {
-          setSelectedCell((o) => [
-            clamp(0, size - 1, o[0] + 1),
-            clamp(0, size - 1, o[1]),
-          ]);
-          break;
-        }
-        case "ArrowLeft": {
-          setSelectedCell((o) => [
-            clamp(0, size - 1, o[0]),
-            clamp(0, size - 1, o[1] - 1),
-          ]);
-          break;
-        }
-        case "ArrowRight": {
-          setSelectedCell((o) => [
-            clamp(0, size - 1, o[0]),
-            clamp(0, size - 1, o[1] + 1),
-          ]);
-          break;
-        }
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-        case "6": {
-        }
-        case "Enter":
-        case " ": {
-          put(selectedCellRef.current[1], selectedCellRef.current[0]);
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [put]);
+    setPieceToPut(game.state.currentPiece);
+  }, [renderCount]); // eslint-disable-line
 
   return (
     <div className="relative aspect-square">
@@ -103,6 +121,31 @@ export const Board = ({ showGridText = false }: Props) => {
             const swapPiece = game.state.swapPiece?.id
               ? mappings[game.state.swapPiece.id].image
               : null;
+
+            const isTargeted =
+              !(rowIndex === 0 && colIndex === 0) &&
+              (selectedCells.some(([x, y]) => {
+                return x === colIndex && y === rowIndex;
+              }) ||
+                (pieceToPut?.id === PieceEnum.MEGA_BOMB &&
+                  rowIndex - hoveredCell[1] >= 0 &&
+                  rowIndex - hoveredCell[1] <= 1 &&
+                  colIndex - hoveredCell[0] >= 0 &&
+                  colIndex - hoveredCell[0] <= 1) ||
+                (pieceToPut?.id == PieceEnum.BOMB &&
+                  rowIndex === hoveredCell[1] &&
+                  colIndex === hoveredCell[0]));
+
+            const shouldShowPreview =
+              (rowIndex !== 0 || colIndex !== 0) &&
+              isEmpty &&
+              pieceToPut &&
+              ![
+                PieceEnum.TELEPORT_PORTAL,
+                PieceEnum.MEGA_BOMB,
+                PieceEnum.BOMB,
+              ].includes(pieceToPut?.id);
+
             return (
               <div
                 key={`grid-${text}-${renderCount}`}
@@ -111,12 +154,12 @@ export const Board = ({ showGridText = false }: Props) => {
                   {
                     "border-b border-tripod-900/70": rowIndex !== 5,
                     "border-r border-tripod-900/70": colIndex !== 5,
-                    // selected:
-                    //   selectedCell[0] === rowIndex &&
-                    //   selectedCell[1] === colIndex,
                   }
                 )}
-                onClick={() => isEmpty && onCellClick(rowIndex, colIndex)}
+                onClick={() =>
+                  onCellClick({ x: colIndex, y: rowIndex, isEmpty })
+                }
+                onMouseEnter={() => setHoveredCell([colIndex, rowIndex])}
               >
                 {rowIndex === 0 && colIndex === 0 && (
                   <>
@@ -138,12 +181,12 @@ export const Board = ({ showGridText = false }: Props) => {
                     alt=""
                   />
                 )}
-                {isEmpty && (rowIndex !== 0 || colIndex !== 0) && (
+                {shouldShowPreview && (
                   <Image
                     className="absolute opacity-0 transition-opacity duration-75 ease-out"
                     width={200}
                     height={200}
-                    src={mappings[game.state.currentPiece.id].image}
+                    src={mappings[pieceToPut.id].image}
                     id="currentPiece"
                     alt="current piece"
                   />
@@ -152,6 +195,9 @@ export const Board = ({ showGridText = false }: Props) => {
                   <span className="absolute top-0 right-0 m-2 rounded-full text-xs flex items-center justify-center">
                     {text}
                   </span>
+                )}
+                {isTargeted && (
+                  <div className="absolute top-0 left-0 w-full h-full animate-pulse bg-green-500/50" />
                 )}
               </div>
             );
