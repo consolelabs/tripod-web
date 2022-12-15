@@ -2167,10 +2167,10 @@ toggle-selection@^1.0.6:
   resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"
   integrity sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==
 
-triple-pod-game-engine@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/triple-pod-game-engine/-/triple-pod-game-engine-6.0.1.tgz#33d876866ad639f5e16afe93fbd402aa85ab24b3"
-  integrity sha512-4vTBF62hReigmIo9DgxWQyDaPvvZRr5RmT7f+VjlxeBljv1wldokBL2K7nW7CMS1DOQ3WSA1Y/HfZ/oqG7TT4Q==
+triple-pod-game-engine@^6.1.1-rc.1:
+  version "6.1.1-rc.1"
+  resolved "https://registry.yarnpkg.com/triple-pod-game-engine/-/triple-pod-game-engine-6.1.1-rc.1.tgz#d8096ac5995d2b2326036f73096297ddb0b61dc8"
+  integrity sha512-zfHm2NTJJlKks+PoymZw/7RALtyDROrkw1MiRQgVpNMIOSfONbOjmw0dJkKuiA84kPvOnZQN/d63WAIyCZAP6w==
   dependencies:
     deepmerge "^4.2.2"
     human-id "^4.0.0"

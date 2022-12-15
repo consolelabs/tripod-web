@@ -6,7 +6,7 @@ export const WelcomeScreen = ({ play }: { play: () => void }) => {
   return (
     <div className="flex justify-center items-start w-screen h-screen bg-welcome-horizontal bg-no-repeat bg-cover bg-center">
       <div className="py-20 flex flex-col items-center">
-        <Image height={70} src={triplepod} alt="tripod text" />
+        <Image className="px-5" height={70} src={triplepod} alt="tripod text" />
         <button
           onClick={play}
           type="button"

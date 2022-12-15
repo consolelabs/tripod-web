@@ -24,6 +24,7 @@ export const Board = ({ showGridText = false }: Props) => {
     use,
     swap,
     setSelectedCells,
+    putPreview,
   } = useGameContext();
 
   const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
@@ -44,7 +45,6 @@ export const Board = ({ showGridText = false }: Props) => {
     const currentPos = [x, y];
 
     if (x === 0 && y === 0) {
-      console.log("swap", game.state);
       swap();
 
       return;
@@ -99,6 +99,12 @@ export const Board = ({ showGridText = false }: Props) => {
     }
   };
 
+  const onMouseEnter = (rowIndex: number, colIndex: number) => {
+    if (rowIndex === 0 && colIndex === 0) return;
+    setHoveredCell([colIndex, rowIndex]);
+    putPreview(colIndex, rowIndex);
+  };
+
   useEffect(() => {
     setPieceToPut(game.state.currentPiece);
   }, [renderCount]); // eslint-disable-line
@@ -148,7 +154,7 @@ export const Board = ({ showGridText = false }: Props) => {
 
             return (
               <div
-                key={`grid-${text}-${renderCount}`}
+                key={`grid-${text}`}
                 className={cln(
                   "cell relative w-full h-full flex items-start justify-end",
                   {
@@ -159,7 +165,7 @@ export const Board = ({ showGridText = false }: Props) => {
                 onClick={() =>
                   onCellClick({ x: colIndex, y: rowIndex, isEmpty })
                 }
-                onMouseEnter={() => setHoveredCell([colIndex, rowIndex])}
+                onMouseEnter={() => onMouseEnter(rowIndex, colIndex)}
               >
                 {rowIndex === 0 && colIndex === 0 && (
                   <>
