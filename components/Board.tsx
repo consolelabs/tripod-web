@@ -148,7 +148,7 @@ export const Board = ({ showGridText = false }: Props) => {
 
             return (
               <div
-                key={`grid-${text}-${renderCount}`}
+                key={`grid-${text}`}
                 className={cln(
                   "cell relative w-full h-full flex items-start justify-end",
                   {
