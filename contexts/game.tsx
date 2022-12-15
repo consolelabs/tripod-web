@@ -21,6 +21,7 @@ interface GameContextValues {
   swap: () => void;
   setSelectedCells: Dispatch<SetStateAction<number[][]>>;
   setHoveredCell: Dispatch<SetStateAction<number[]>>;
+  putPreview: (x: number, y: number) => void;
 }
 
 const [Provider, useGameContext] = createContext<GameContextValues>({
@@ -76,6 +77,11 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
     rerender();
   };
 
+  const putPreview = (x: number, y: number) => {
+    game?.nextState({ type: "scan", x, y });
+    setRenderCount(Date.now());
+  };
+
   useEffect(() => {
     const newGame = new Game();
     setGame(newGame);
@@ -95,6 +101,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
         swap,
         setSelectedCells,
         setHoveredCell,
+        putPreview,
       }}
     >
       {children}

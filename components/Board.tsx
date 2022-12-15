@@ -24,6 +24,7 @@ export const Board = ({ showGridText = false }: Props) => {
     use,
     swap,
     setSelectedCells,
+    putPreview,
   } = useGameContext();
 
   const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
@@ -44,7 +45,6 @@ export const Board = ({ showGridText = false }: Props) => {
     const currentPos = [x, y];
 
     if (x === 0 && y === 0) {
-      console.log("swap", game.state);
       swap();
 
       return;
@@ -97,6 +97,12 @@ export const Board = ({ showGridText = false }: Props) => {
         break;
       }
     }
+  };
+
+  const onMouseEnter = (rowIndex: number, colIndex: number) => {
+    if (rowIndex === 0 && colIndex === 0) return;
+    setHoveredCell([colIndex, rowIndex]);
+    putPreview(colIndex, rowIndex);
   };
 
   useEffect(() => {
@@ -159,7 +165,7 @@ export const Board = ({ showGridText = false }: Props) => {
                 onClick={() =>
                   onCellClick({ x: colIndex, y: rowIndex, isEmpty })
                 }
-                onMouseEnter={() => setHoveredCell([colIndex, rowIndex])}
+                onMouseEnter={() => onMouseEnter(rowIndex, colIndex)}
               >
                 {rowIndex === 0 && colIndex === 0 && (
                   <>

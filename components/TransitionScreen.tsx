@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 
 const fadeIn = [
   {
-    borderWidth: "0vw",
+    borderWidth: "0",
   },
   {
-    borderWidth: "50vw",
+    borderWidth: "max(50vh, 50vw)",
   },
 ];
 
@@ -32,8 +32,12 @@ export const TransitionScreen = ({ children }: Props) => {
     <div className="w-screen h-screen">
       {anim ? children(anim) : null}
       <div
+        style={{
+          width: "max(100vw, 100vh)",
+          height: "max(100vw, 100vh)",
+        }}
         ref={transitionRef}
-        className="z-10 pointer-events-none border-gray-900 fixed scale-[2] min-h-screen w-screen rounded-full aspect-square left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -mt-96"
+        className="z-10 pointer-events-none border-gray-900 fixed scale-[2] h-screen min-w-screen rounded-full aspect-square left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       />
     </div>
   );
