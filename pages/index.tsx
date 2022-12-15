@@ -1,7 +1,7 @@
-import Head from "next/head";
 import Image from "next/image";
 import { Board } from "../components/Board";
 import { Guides } from "../components/Guides";
+import { SEO } from "../components/SEO";
 import { Shop } from "../components/Shop";
 import { mappings } from "../constants/mappings";
 import { useGameContext } from "../contexts/game";
@@ -18,9 +18,7 @@ export default function Home() {
 
   return (
     <div className="overflow-auto flex min-h-screen min-w-screen relative bg-map">
-      <Head>
-        <title>Triple Pod</title>
-      </Head>
+      <SEO />
       <div className="absolute w-full h-full flex items-center">
         <div className="flex flex-wrap max-w-[960px] w-full mx-auto gap-y-5">
           <div className="w-full text-white text-xs md:text-xl space-x-1 flex">
