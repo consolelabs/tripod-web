@@ -7,13 +7,13 @@ const pointFormat = new Intl.NumberFormat().format;
 
 export const Shop = () => {
   return (
-    <div className="py-4 text-white h-full flex flex-col space-y-2">
+    <div className="text-white h-full flex flex-col space-y-2">
       <div className="font-bold text-xl">Shop</div>
       <div className="rounded-md bg-tripod-900/70 flex-1 overflow-auto p-4 h-full text-white">
         <div className="flex flex-col justify-between h-full">
           {shopItems.map((item, index) => {
             return (
-              <div className="w-full flex items-start" key={index}>
+              <div className="w-full flex items-start gap-x-1.5" key={index}>
                 <Image
                   width={64}
                   height={64}

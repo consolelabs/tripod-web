@@ -4,12 +4,11 @@ import cln from "classnames";
 import { clamp } from "../utils";
 import { useGameContext } from "../contexts/game";
 import { mappings } from "../constants/mappings";
-import background from "../public/background.png";
-import disk from "../public/disk.png";
+import background from "../public/background.webp";
+import disk from "../public/disk.webp";
 import { PieceEnum } from "triple-pod-game-engine";
 
 const size = 6;
-const ratio = 1280 / 1300;
 const chars = ["a", "b", "c", "d", "e", "f"];
 
 type Props = {
@@ -88,15 +87,14 @@ export const Board = ({ showGridText = false }: Props) => {
 
   return (
     <div className="relative aspect-square">
-      <div style={{ paddingTop: `calc(100% * ${ratio})` }}>
-        <Image
-          src={background}
-          fill
-          style={{ objectFit: "contain" }}
-          alt=""
-          priority
-        />
-      </div>
+      <Image
+        className="rounded-xl"
+        src={background}
+        fill
+        style={{ objectFit: "contain" }}
+        alt=""
+        priority
+      />
       <div className="font-medium p-[7%] text-white/30 absolute top-0 left-0 h-full w-full grid grid-cols-6 grid-rows-6">
         {game.state.board.map((row, rowIndex) => {
           return row.map((col, colIndex) => {
@@ -115,7 +113,7 @@ export const Board = ({ showGridText = false }: Props) => {
                     //   selectedCell[1] === colIndex,
                   }
                 )}
-                onClick={() => onCellClick(rowIndex, colIndex)}
+                onClick={() => isEmpty && onCellClick(rowIndex, colIndex)}
               >
                 {rowIndex === 0 && colIndex === 0 && (
                   <Image src={disk} width={200} height={200} alt="" />

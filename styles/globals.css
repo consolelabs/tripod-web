@@ -7,7 +7,14 @@
 }
 
 body {
-  font-family: "Istok Web", sans-serif;
+  font-family: "Sen", sans-serif;
+}
+
+.bg-map {
+  background: url(../public/podtownmap.jpeg), rgba(0, 0, 0, 0.85);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .cell::before {
