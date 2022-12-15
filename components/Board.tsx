@@ -138,7 +138,7 @@ export const Board = ({ showGridText = false }: Props) => {
                     alt=""
                   />
                 )}
-                {isEmpty && rowIndex !== 0 && colIndex !== 0 && (
+                {isEmpty && (rowIndex !== 0 || colIndex !== 0) && (
                   <Image
                     className="absolute opacity-0 transition-opacity duration-75 ease-out"
                     width={200}
