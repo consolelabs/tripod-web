@@ -53,6 +53,11 @@
   resolved "https://registry.yarnpkg.com/@fontsource/istok-web/-/istok-web-4.5.11.tgz#19ea6bd5d3a123d1552bfb9762896e9dfce87aa7"
   integrity sha512-zufosl3Sm61IiupALIpuvxy7vmuA1HYPid0BWT50n8hd9JhC2dEHw3g51kbWswmpjA3jQZoFGBKpInl2Nd7Wjw==
 
+"@fontsource/sen@^4.5.9":
+  version "4.5.9"
+  resolved "https://registry.yarnpkg.com/@fontsource/sen/-/sen-4.5.9.tgz#2a1bd456200b1bf6eed34e11a2862baf69dea451"
+  integrity sha512-QN+pW9fq+XNQoVwjrzxlZELSMSaKxUHlFJ1NApNr8b/KyGvRAL+hNVMhT1jBamtzkcI09yiGq7hdnEfo66rFog==
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.7.tgz#38aec044c6c828f6ed51d5d7ae3d9b9faf6dbb0f"
