@@ -17,7 +17,7 @@ export default function Home() {
   const { game, renderCount } = useGameContext();
 
   if (!game) {
-    return;
+    return <SEO />;
   }
 
   return (
