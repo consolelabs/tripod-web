@@ -53,7 +53,7 @@ export default function Home() {
             </div>
           </div>
           <div className="w-full md:w-2/3">
-            <Board showGridText />
+            <Board />
           </div>
           <div className="w-full md:w-1/3 px-3">
             <Shop />
