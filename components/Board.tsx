@@ -100,6 +100,9 @@ export const Board = ({ showGridText = false }: Props) => {
           return row.map((col, colIndex) => {
             const text = `${chars[colIndex]}${rowIndex + 1}`;
             const isEmpty = col.id === PieceEnum.EMPTY;
+            const swapPiece = game.state.swapPiece?.id
+              ? mappings[game.state.swapPiece.id].image
+              : null;
             return (
               <div
                 key={`grid-${text}-${renderCount}`}
@@ -116,7 +119,16 @@ export const Board = ({ showGridText = false }: Props) => {
                 onClick={() => isEmpty && onCellClick(rowIndex, colIndex)}
               >
                 {rowIndex === 0 && colIndex === 0 && (
-                  <Image src={disk} width={200} height={200} alt="" />
+                  <>
+                    <Image src={disk} width={200} height={200} alt="" />
+                    {swapPiece && (
+                      <Image
+                        src={swapPiece}
+                        alt="swap piece"
+                        className="absolute"
+                      />
+                    )}
+                  </>
                 )}
                 {col.id > 0 && (
                   <Image
@@ -126,7 +138,7 @@ export const Board = ({ showGridText = false }: Props) => {
                     alt=""
                   />
                 )}
-                {isEmpty && (
+                {isEmpty && rowIndex !== 0 && colIndex !== 0 && (
                   <Image
                     className="absolute opacity-0 transition-opacity duration-75 ease-out"
                     width={200}
