@@ -92,7 +92,6 @@ export const Board = ({ debug = false }: Props) => {
     renderCount,
     selectedCells,
     hoveredCell,
-    isUpdating,
     put,
     use,
     swap,

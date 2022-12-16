@@ -11,7 +11,7 @@ import { Data, Game } from "triple-pod-game-engine";
 import { shopItems } from "../constants/shopItems";
 
 // Delay between each move
-const DELAY = 1000;
+const DELAY = 700;
 
 interface GameContextValues {
   game: Game;
@@ -43,7 +43,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
     setRenderCount(Date.now());
   };
 
-  const updateGameState = (data: Data) => {
+  const updateGameState = (data: Data, delay = true) => {
     if (isUpdating) {
       return;
     }
@@ -52,9 +52,13 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
 
     if (res.valid) {
       setIsUpdating(true);
-      setTimeout(() => {
-        setIsUpdating(false);
-      }, DELAY);
+
+      setTimeout(
+        () => {
+          setIsUpdating(false);
+        },
+        delay ? DELAY : 0
+      );
     } else {
       toast(res.error);
     }
@@ -69,7 +73,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
     const shopItem = shopItems.find((item) => item.id === id);
 
     if (shopItem) {
-      updateGameState({ type: "buy", piece: shopItem });
+      updateGameState({ type: "buy", piece: shopItem }, false);
       rerender();
     }
   };
