@@ -79,7 +79,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
 
   const putPreview = (x: number, y: number) => {
     game?.nextState({ type: "scan", x, y });
-    setRenderCount(Date.now());
+    rerender();
   };
 
   useEffect(() => {
