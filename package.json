@@ -12,6 +12,7 @@
     "@dwarvesf/react-hooks": "^0.7.0",
     "@dwarvesf/react-utils": "^0.4.1",
     "@fontsource/sen": "^4.5.9",
+    "@react-spring/web": "^9.6.0",
     "@tippyjs/react": "^4.2.6",
     "@types/node": "18.11.14",
     "@types/react": "18.0.26",

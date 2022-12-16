@@ -44,7 +44,7 @@ export const Shop = () => {
           {shopItems.map((item, index) => {
             return (
               <div
-                className="w-full flex items-start gap-x-1.5 cursor-pointer hover:bg-white/30 rounded"
+                className="w-full flex items-start gap-x-1.5 cursor-pointer cell"
                 key={index}
                 onClick={() => onClick(item.id)}
               >

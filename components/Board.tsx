@@ -5,12 +5,85 @@ import { useGameContext } from "../contexts/game";
 import { mappings } from "../constants/mappings";
 import background from "../public/background.webp";
 import disk from "../public/disk.webp";
-import { Piece, PieceEnum } from "triple-pod-game-engine";
+import {
+  Piece,
+  PieceEnum,
+  levelByPiece,
+  Position,
+} from "triple-pod-game-engine";
+import { useTransition, animated } from "@react-spring/web";
 
 const chars = ["a", "b", "c", "d", "e", "f"];
 
 type Props = {
   showGridText?: boolean;
+};
+
+const TripodPiece = ({
+  id,
+  x,
+  y,
+  lastActionPos,
+}: {
+  id: PieceEnum;
+  x: number;
+  y: number;
+  lastActionPos: Position;
+}) => {
+  const transitions = useTransition(id, {
+    from: {
+      opacity: 1,
+      scale: 1,
+      x: "0%",
+      y: "0%",
+    },
+    leave: (item) => {
+      const pieceKeys = Object.keys(
+        levelByPiece
+      ) as unknown as Array<PieceEnum>;
+      const isPiece =
+        item === PieceEnum.EMPTY ||
+        pieceKeys.some((p) => String(p) === String(item));
+
+      const [lastX, lastY] = lastActionPos;
+      let shift = {
+        x: "0%",
+        y: "0%",
+      };
+
+      if (isPiece) {
+        if (lastX > x) {
+          shift.x = "100%";
+        } else if (lastX < x) {
+          shift.x = "-100%";
+        }
+
+        if (lastY > y) {
+          shift.y = "100%";
+        } else if (lastY < y) {
+          shift.y = "-100%";
+        }
+      }
+
+      return {
+        position: "absolute",
+        opacity: isPiece ? 0 : 1,
+        scale: isPiece ? 0.8 : 1,
+        ...shift,
+      };
+    },
+  });
+
+  return transitions((style, id) => (
+    <animated.div style={style}>
+      <Image
+        src={mappings[id].image}
+        width={200}
+        height={200}
+        alt="piece item"
+      />
+    </animated.div>
+  ));
 };
 
 export const Board = ({ showGridText = false }: Props) => {
@@ -99,12 +172,6 @@ export const Board = ({ showGridText = false }: Props) => {
     }
   };
 
-  const onMouseEnter = (rowIndex: number, colIndex: number) => {
-    if (rowIndex === 0 && colIndex === 0) return;
-    setHoveredCell([colIndex, rowIndex]);
-    putPreview(colIndex, rowIndex);
-  };
-
   useEffect(() => {
     setPieceToPut(game.state.currentPiece);
   }, [renderCount]); // eslint-disable-line
@@ -114,10 +181,8 @@ export const Board = ({ showGridText = false }: Props) => {
       <Image
         className="rounded-xl"
         src={background}
-        fill
         style={{ objectFit: "contain" }}
         alt=""
-        priority
       />
       <div className="font-medium p-[7%] text-white/30 absolute top-0 left-0 h-full w-full grid grid-cols-6 grid-rows-6">
         {game.state.board.map((row, rowIndex) => {
@@ -165,7 +230,6 @@ export const Board = ({ showGridText = false }: Props) => {
                 onClick={() =>
                   onCellClick({ x: colIndex, y: rowIndex, isEmpty })
                 }
-                onMouseEnter={() => onMouseEnter(rowIndex, colIndex)}
               >
                 {rowIndex === 0 && colIndex === 0 && (
                   <>
@@ -179,14 +243,12 @@ export const Board = ({ showGridText = false }: Props) => {
                     )}
                   </>
                 )}
-                {col.id > 0 && (
-                  <Image
-                    src={mappings[col.id].image}
-                    width={200}
-                    height={200}
-                    alt=""
-                  />
-                )}
+                <TripodPiece
+                  id={col.id}
+                  x={colIndex}
+                  y={rowIndex}
+                  lastActionPos={game.state.lastActionPos}
+                />
                 {shouldShowPreview && (
                   <Image
                     className="absolute opacity-0 transition-opacity duration-75 ease-out"
