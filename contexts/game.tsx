@@ -101,7 +101,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    const newGame = new Game({ id: "open-plants-play" });
+    const newGame = new Game();
     setGame(newGame);
     newGame.start();
   }, []);
