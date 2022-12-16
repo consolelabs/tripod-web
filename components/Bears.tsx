@@ -1,5 +1,6 @@
-import Lottie, { LottieRef, LottieRefCurrentProps } from "lottie-react";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import smokeAnimation from "../assets/animations/smoke.json";
+import explosionAnimation from "../assets/animations/explosion.json";
 import Image from "next/image";
 import { BearPiece, useBearPieces } from "../hooks/useBearPieces";
 import { mappings } from "../constants/mappings";
@@ -7,12 +8,19 @@ import { useEffect, useRef, useState } from "react";
 
 const GRID_SIZE = 6;
 
-const Bear = ({ bear }: { bear: BearPiece }) => {
+const Bear = ({
+  bear,
+  onAfterDestroy,
+}: {
+  bear: BearPiece;
+  onAfterDestroy: () => void;
+}) => {
   const previousPosition = useRef<any>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rocketRef = useRef<HTMLImageElement | null>(null);
   const smokeRef = useRef<LottieRefCurrentProps>(null);
-  const [initialSegment, setInitialSegment] = useState([25, 26]);
+  const [initialSmokeAnimationSegment, setInitialSmokeAnimationSegment] =
+    useState([25, 26]);
 
   const left = `${(bear.coord.x / GRID_SIZE) * 100}%`;
   const top = `${(bear.coord.y / GRID_SIZE) * 100}%`;
@@ -73,11 +81,11 @@ const Bear = ({ bear }: { bear: BearPiece }) => {
       ];
 
       containerRef.current.animate(moveAnimation, {
-        duration: 1000,
+        duration: 700,
         fill: "forwards",
       });
       rocketRef.current.animate(jumpAnimation, {
-        duration: 1000,
+        duration: 700,
         fill: "forwards",
       });
 
@@ -85,15 +93,15 @@ const Bear = ({ bear }: { bear: BearPiece }) => {
         // Trigger smoke animation on rocket land
         setTimeout(() => {
           smokeRef.current?.goToAndPlay(0);
-        }, 650);
+        }, 450);
       } else {
-        setInitialSegment([0, 26]);
+        setInitialSmokeAnimationSegment([0, 26]);
       }
 
       previousPosition.current.top = top;
       previousPosition.current.left = left;
     }
-  }, [left, top]);
+  }, [left, top]); // eslint-disable-line
 
   useEffect(() => {
     smokeRef.current?.setSpeed(2);
@@ -115,22 +123,30 @@ const Bear = ({ bear }: { bear: BearPiece }) => {
         autoplay={false}
         loop={false}
         // @ts-ignore
-        initialSegment={initialSegment}
+        initialSegment={initialSmokeAnimationSegment}
       />
       <Image
         ref={rocketRef}
-        src={mappings[bear.id].image}
+        src={mappings[bear.pieceId].image}
         width={200}
         height={200}
         alt=""
         className="origin-bottom relative"
       />
+      {bear?.destroyed && (
+        <Lottie
+          animationData={explosionAnimation}
+          className="scale-[1.25] absolute bottom-0 mb-[25%]"
+          loop={false}
+          onComplete={onAfterDestroy}
+        />
+      )}
     </div>
   );
 };
 
 export const Bears = () => {
-  const { bearPieces } = useBearPieces();
+  const { bearPieces, setBearPieces } = useBearPieces();
 
   return (
     <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -139,7 +155,24 @@ export const Bears = () => {
           return null;
         }
 
-        return <Bear bear={bear} key={`${index}-${bear.id}`} />;
+        return (
+          <Bear
+            bear={bear}
+            key={`${index}-${bear.id}`}
+            onAfterDestroy={() => {
+              setBearPieces((o) => {
+                const newO = JSON.parse(JSON.stringify(o));
+                const index = o.findIndex((p) => p?.id === bear.id);
+
+                if (index >= 0) {
+                  newO[index] = null;
+                }
+
+                return newO;
+              });
+            }}
+          />
+        );
       })}
     </div>
   );

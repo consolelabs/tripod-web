@@ -1,10 +1,25 @@
 import { useEffect, useState } from "react";
-import { Piece, PieceEnum } from "triple-pod-game-engine";
+import { Game, PieceEnum } from "triple-pod-game-engine";
+import { v4 as uuidv4 } from "uuid";
 import { useGameContext } from "../contexts/game";
 
 const GRID_SIZE = 6;
 
-export type BearPiece = Piece & { coord: { x: number; y: number } };
+export class BearPiece {
+  id: string;
+  pieceId: PieceEnum;
+  coord: { x: number; y: number };
+  destroyed = false;
+
+  constructor(pieceId: PieceEnum, x: number, y: number) {
+    this.id = uuidv4();
+    this.pieceId = pieceId;
+    this.coord = {
+      x,
+      y,
+    };
+  }
+}
 
 export const useBearPieces = () => {
   const { game } = useGameContext();
@@ -52,10 +67,11 @@ export const useBearPieces = () => {
             // Get the nearest null position in the bearPieces array
             const nullIndex = newBearPieces.findIndex((piece) => !piece);
 
-            newBearPieces[nullIndex] = {
-              ...col,
-              coord: { x: colIndex, y: rowIndex },
-            };
+            newBearPieces[nullIndex] = new BearPiece(
+              col.id,
+              colIndex,
+              rowIndex
+            );
             bearMoveChecks[nullIndex] = true;
           } else if (bearMoveEvent && bearMoveEvent.type === "bear-move") {
             // Else find its index in the bearPieces array
@@ -80,10 +96,11 @@ export const useBearPieces = () => {
               // Get the nearest null position in the bearPieces array
               const nullIndex = newBearPieces.findIndex((piece) => !piece);
 
-              newBearPieces[nullIndex] = {
-                ...col,
-                coord: { x: colIndex, y: rowIndex },
-              };
+              newBearPieces[nullIndex] = new BearPiece(
+                col.id,
+                colIndex,
+                rowIndex
+              );
               bearMoveChecks[nullIndex] = true;
             }
           }
@@ -93,9 +110,9 @@ export const useBearPieces = () => {
       // See if there's any bear that didn't move, meaning it's dead and we should not render it anymore
       // out of the bearPieces list
       bearMoveChecks.forEach((check, index) => {
-        if (!check) {
-          // @ts-ignore
-          newBearPieces[index] = null;
+        if (!check && newBearPieces[index]) {
+          newBearPieces[index]!.pieceId = PieceEnum.EMPTY;
+          newBearPieces[index]!.destroyed = true;
         }
       });
 
@@ -103,5 +120,5 @@ export const useBearPieces = () => {
     }
   }, [JSON.stringify(game?.state.board)]); // eslint-disable-line
 
-  return { bearPieces };
+  return { bearPieces, setBearPieces };
 };
