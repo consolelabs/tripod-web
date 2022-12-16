@@ -10,11 +10,15 @@ import { toast } from "react-toastify";
 import { Data, Game } from "triple-pod-game-engine";
 import { shopItems } from "../constants/shopItems";
 
+// Delay between each move
+const DELAY = 1000;
+
 interface GameContextValues {
   game: Game;
   renderCount: number;
   selectedCells: number[][];
   hoveredCell: number[];
+  isUpdating: boolean;
   put: (x: number, y: number) => void;
   buy: (itemIndex: number) => void;
   use: (pieceId: number, params?: Record<string, any>) => void;
@@ -33,15 +37,25 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
   const [renderCount, setRenderCount] = useState(Date.now());
   const [selectedCells, setSelectedCells] = useState<number[][]>([]);
   const [hoveredCell, setHoveredCell] = useState<number[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const rerender = () => {
     setRenderCount(Date.now());
   };
 
   const updateGameState = (data: Data) => {
+    if (isUpdating) {
+      return;
+    }
+
     const res = game!.nextState(data);
 
-    if (!res.valid) {
+    if (res.valid) {
+      setIsUpdating(true);
+      setTimeout(() => {
+        setIsUpdating(false);
+      }, DELAY);
+    } else {
       toast(res.error);
     }
   };
@@ -83,7 +97,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    const newGame = new Game();
+    const newGame = new Game({ id: "open-plants-play" });
     setGame(newGame);
     newGame.start();
   }, []);
@@ -95,6 +109,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
         game: game!,
         selectedCells,
         hoveredCell,
+        isUpdating,
         put,
         buy,
         use,

@@ -16,7 +16,7 @@ import { Guides } from "../components/Guides";
 const pointFormat = new Intl.NumberFormat().format;
 
 export default function Home() {
-  const [play, setPlay] = useState(false);
+  const [play, setPlay] = useState(true);
   const { game, renderCount, hoveredCell } = useGameContext();
 
   const hoveredPiece = useMemo(() => {

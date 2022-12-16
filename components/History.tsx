@@ -23,8 +23,9 @@ export const History = () => {
 
   const history = useMemo(() => {
     return game.history.map((m, i) => {
-      const events = game.state.events;
-      const condenses = [...events[i]]
+      const events = game.state.events[i] || [];
+
+      const condenses = [...events]
         .reverse()
         .map((e, i) => {
           if (e.type === "condense") {
@@ -46,10 +47,10 @@ export const History = () => {
           return;
         })
         .filter(Boolean);
-      const destroy = [...events[i]]
+      const destroy = [...events]
         .reverse()
         .filter((e) => e.type === "destroy")[0];
-      const isMiss = events[i].reverse().some((e) => e.type === "miss");
+      const isMiss = events.reverse().some((e) => e.type === "miss");
       const isCombo = condenses.length > 1;
       const isMatch = condenses.length > 0;
       const comboStr = condenses.map((e) => <>{e}</>);
@@ -133,6 +134,10 @@ export const History = () => {
         <div className="flex flex-col space-y-2 absolute top-0 left-0 w-full h-full overflow-auto p-4">
           {history.length > 0
             ? history.map((e, index) => {
+                if (!e) {
+                  return null;
+                }
+
                 return <div key={index}>- {e}</div>;
               })
             : "No history data."}

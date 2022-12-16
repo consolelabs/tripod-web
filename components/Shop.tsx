@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import { PieceEnum } from "triple-pod-game-engine";
@@ -9,7 +10,7 @@ import coins from "../public/coins.png";
 const pointFormat = new Intl.NumberFormat().format;
 
 export const Shop = () => {
-  const { game, buy, use } = useGameContext();
+  const { game, isUpdating, buy, use } = useGameContext();
 
   const onClick = (id: number) => {
     const itemToBuy = shopItems.find((item) => item.id === id);
@@ -44,9 +45,12 @@ export const Shop = () => {
           {shopItems.map((item, index) => {
             return (
               <div
-                className="w-full flex items-start gap-x-1.5 cursor-pointer cell"
+                className={classNames(
+                  "w-full flex items-start gap-x-1.5 cursor-pointer cell",
+                  { "cursor-not-allowed": isUpdating }
+                )}
                 key={index}
-                onClick={() => onClick(item.id)}
+                onClick={() => !isUpdating && onClick(item.id)}
               >
                 <Image
                   width={64}

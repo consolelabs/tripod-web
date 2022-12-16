@@ -12,11 +12,10 @@ import {
   Position,
 } from "triple-pod-game-engine";
 import { useTransition, animated } from "@react-spring/web";
-
-const chars = ["a", "b", "c", "d", "e", "f"];
+import { Bears } from "./Bears";
 
 type Props = {
-  showGridText?: boolean;
+  debug?: boolean;
 };
 
 const TripodPiece = ({
@@ -74,6 +73,10 @@ const TripodPiece = ({
     },
   });
 
+  if ([PieceEnum.BEAR, PieceEnum.NINJA_BEAR].includes(id)) {
+    return null;
+  }
+
   return transitions((style, id) => (
     <animated.div style={style}>
       <Image
@@ -81,23 +84,23 @@ const TripodPiece = ({
         width={200}
         height={200}
         alt="piece item"
+        className="aspect-square"
       />
     </animated.div>
   ));
 };
 
-export const Board = ({ showGridText = false }: Props) => {
+export const Board = ({ debug = false }: Props) => {
   const {
     game,
     renderCount,
     selectedCells,
     hoveredCell,
-    setHoveredCell,
+    isUpdating,
     put,
     use,
     swap,
     setSelectedCells,
-    putPreview,
   } = useGameContext();
 
   const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
@@ -184,93 +187,108 @@ export const Board = ({ showGridText = false }: Props) => {
         style={{ objectFit: "contain" }}
         alt=""
       />
-      <div className="font-medium p-[7%] text-white/30 absolute top-0 left-0 h-full w-full grid grid-cols-6 grid-rows-6">
-        {game.state.board.map((row, rowIndex) => {
-          return row.map((col, colIndex) => {
-            const text = `${chars[colIndex]}${rowIndex + 1}`;
-            const isEmpty = col.id === PieceEnum.EMPTY;
-            const swapPiece = game.state.swapPiece?.id
-              ? mappings[game.state.swapPiece.id].image
-              : null;
+      <div className="font-medium p-[7%] absolute top-0 left-0 h-full w-full">
+        <div className="grid grid-cols-6 grid-rows-6 text-white/30 relative">
+          {game.state.board.map((row, rowIndex) => {
+            return row.map((col, colIndex) => {
+              const text = `(${colIndex},${rowIndex})`;
+              const isEmpty = col.id === PieceEnum.EMPTY;
+              const swapPiece = game.state.swapPiece?.id
+                ? mappings[game.state.swapPiece.id].image
+                : null;
 
-            const isTargeted =
-              !(rowIndex === 0 && colIndex === 0) &&
-              (selectedCells.some(([x, y]) => {
-                return x === colIndex && y === rowIndex;
-              }) ||
-                (pieceToPut?.id === PieceEnum.MEGA_BOMB &&
-                  rowIndex - hoveredCell[1] >= 0 &&
-                  rowIndex - hoveredCell[1] <= 1 &&
-                  colIndex - hoveredCell[0] >= 0 &&
-                  colIndex - hoveredCell[0] <= 1) ||
-                (pieceToPut?.id == PieceEnum.BOMB &&
-                  rowIndex === hoveredCell[1] &&
-                  colIndex === hoveredCell[0]));
+              const isTargeted =
+                !(rowIndex === 0 && colIndex === 0) &&
+                (selectedCells.some(([x, y]) => {
+                  return x === colIndex && y === rowIndex;
+                }) ||
+                  (pieceToPut?.id === PieceEnum.MEGA_BOMB &&
+                    rowIndex - hoveredCell[1] >= 0 &&
+                    rowIndex - hoveredCell[1] <= 1 &&
+                    colIndex - hoveredCell[0] >= 0 &&
+                    colIndex - hoveredCell[0] <= 1) ||
+                  (pieceToPut?.id == PieceEnum.BOMB &&
+                    rowIndex === hoveredCell[1] &&
+                    colIndex === hoveredCell[0]));
 
-            const shouldShowPreview =
-              (rowIndex !== 0 || colIndex !== 0) &&
-              isEmpty &&
-              pieceToPut &&
-              ![
-                PieceEnum.TELEPORT_PORTAL,
-                PieceEnum.MEGA_BOMB,
-                PieceEnum.BOMB,
-              ].includes(pieceToPut?.id);
+              const shouldShowPreview =
+                (rowIndex !== 0 || colIndex !== 0) &&
+                isEmpty &&
+                pieceToPut &&
+                ![
+                  PieceEnum.TELEPORT_PORTAL,
+                  PieceEnum.MEGA_BOMB,
+                  PieceEnum.BOMB,
+                ].includes(pieceToPut?.id);
 
-            return (
-              <div
-                key={`grid-${text}`}
-                className={cln(
-                  "cell relative w-full h-full flex items-start justify-end",
-                  {
-                    "border-b border-tripod-900/70": rowIndex !== 5,
-                    "border-r border-tripod-900/70": colIndex !== 5,
+              return (
+                <div
+                  key={`grid-${text}`}
+                  className={cln(
+                    "cell relative w-full h-full flex items-start justify-end",
+                    {
+                      "border-b border-tripod-900/70": rowIndex !== 5,
+                      "border-r border-tripod-900/70": colIndex !== 5,
+                      "cursor-not-allowed": isUpdating,
+                    }
+                  )}
+                  onClick={() =>
+                    onCellClick({ x: colIndex, y: rowIndex, isEmpty })
                   }
-                )}
-                onClick={() =>
-                  onCellClick({ x: colIndex, y: rowIndex, isEmpty })
-                }
-              >
-                {rowIndex === 0 && colIndex === 0 && (
-                  <>
-                    <Image src={disk} width={200} height={200} alt="" />
-                    {swapPiece && (
-                      <Image
-                        src={swapPiece}
-                        alt="swap piece"
-                        className="absolute"
-                      />
-                    )}
-                  </>
-                )}
-                <TripodPiece
-                  id={col.id}
-                  x={colIndex}
-                  y={rowIndex}
-                  lastActionPos={game.state.lastActionPos}
-                />
-                {shouldShowPreview && (
-                  <Image
-                    className="absolute opacity-0 transition-opacity duration-75 ease-out"
-                    width={200}
-                    height={200}
-                    src={mappings[pieceToPut.id].image}
-                    id="currentPiece"
-                    alt="current piece"
+                >
+                  {/* Storage */}
+                  {rowIndex === 0 && colIndex === 0 && (
+                    <>
+                      <Image src={disk} width={200} height={200} alt="" />
+                      {swapPiece && (
+                        <Image
+                          src={swapPiece}
+                          alt="swap piece"
+                          className="absolute aspect-square"
+                        />
+                      )}
+                    </>
+                  )}
+                  {/* Piece */}
+                  <TripodPiece
+                    id={col.id}
+                    x={colIndex}
+                    y={rowIndex}
+                    lastActionPos={game.state.lastActionPos}
                   />
-                )}
-                {showGridText && (
-                  <span className="absolute top-0 right-0 m-2 rounded-full text-xs flex items-center justify-center">
-                    {text}
-                  </span>
-                )}
-                {isTargeted && (
-                  <div className="absolute top-0 left-0 w-full h-full animate-pulse bg-green-500/50" />
-                )}
-              </div>
-            );
-          });
-        })}
+                  {debug &&
+                    [PieceEnum.BEAR, PieceEnum.NINJA_BEAR].includes(col.id) && (
+                      <div className="w-full h-full bg-red-500" />
+                    )}
+                  {/* Preview piece to put */}
+                  {shouldShowPreview && (
+                    <Image
+                      className="absolute opacity-0 transition-opacity duration-75 ease-out aspect-square"
+                      width={200}
+                      height={200}
+                      src={mappings[pieceToPut.id].image}
+                      id="currentPiece"
+                      alt="current piece"
+                    />
+                  )}
+                  {/* Grid row & column data */}
+                  {debug && (
+                    <span className="absolute top-0 right-0 m-2 rounded-full text-xs flex items-center justify-center">
+                      {text}
+                    </span>
+                  )}
+                  {/* Indicator if this cell is targeted for upcoming actions */}
+                  {isTargeted && (
+                    <div className="absolute top-0 left-0 w-full h-full animate-pulse bg-green-500/50" />
+                  )}
+                </div>
+              );
+            });
+          })}
+
+          {/* Bear layer */}
+          <Bears />
+        </div>
       </div>
     </div>
   );
