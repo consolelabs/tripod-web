@@ -46,8 +46,7 @@ export const Shop = () => {
             return (
               <div
                 className={classNames(
-                  "w-full flex items-start gap-x-1.5 cursor-pointer cell",
-                  { "cursor-not-allowed": isUpdating }
+                  "w-full flex items-start gap-x-1.5 cursor-pointer cell"
                 )}
                 key={index}
                 onClick={() => !isUpdating && onClick(item.id)}

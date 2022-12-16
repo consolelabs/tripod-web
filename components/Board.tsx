@@ -45,23 +45,19 @@ const TripodPiece = ({
         pieceKeys.some((p) => String(p) === String(item));
 
       const [lastX, lastY] = lastActionPos;
+      const shiftSpeed = 120;
+
       let shift = {
         x: "0%",
         y: "0%",
       };
 
       if (isPiece) {
-        if (lastX > x) {
-          shift.x = "100%";
-        } else if (lastX < x) {
-          shift.x = "-100%";
-        }
+        const diffX = lastX - x;
+        const diffY = lastY - y;
 
-        if (lastY > y) {
-          shift.y = "100%";
-        } else if (lastY < y) {
-          shift.y = "-100%";
-        }
+        shift.x = `${diffX * shiftSpeed}%`;
+        shift.y = `${diffY * shiftSpeed}%`;
       }
 
       return {
@@ -229,7 +225,6 @@ export const Board = ({ debug = false }: Props) => {
                     {
                       "border-b border-tripod-900/70": rowIndex !== 5,
                       "border-r border-tripod-900/70": colIndex !== 5,
-                      "cursor-not-allowed": isUpdating,
                     }
                   )}
                   onClick={() =>
