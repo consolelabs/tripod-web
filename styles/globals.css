@@ -6,6 +6,10 @@
   --cursor-color: #d0c7f4;
 }
 
+* {
+  cursor: url(../public/cursor.png), auto;
+}
+
 body {
   font-family: "Sen", sans-serif;
 }
