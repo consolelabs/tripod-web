@@ -39,7 +39,7 @@ export const Shop = () => {
 
   return (
     <div className="text-white h-full flex flex-col space-y-2">
-      <div className="font-bold text-xl">Shop</div>
+      <div className="font-bold text-lg">Shop</div>
       <div className="rounded-md bg-tripod-900/70 flex-1 overflow-auto p-4 h-full text-white">
         <div className="flex flex-col justify-between h-full space-y-2">
           {shopItems.map((item, index) => {
@@ -52,15 +52,15 @@ export const Shop = () => {
                 onClick={() => !isUpdating && onClick(item.id)}
               >
                 <Image
-                  width={64}
-                  height={64}
+                  width={48}
+                  height={48}
                   alt={item.name}
                   src={mappings[item.id].image}
                 />
                 <div className="flex-1 flex flex-col">
-                  <div className="font-medium">{item.name}</div>
-                  <div className="text-sm">{item.desc}</div>
-                  <div className="flex items-center space-x-1 text-sm">
+                  <div className="text-sm font-medium">{item.name}</div>
+                  <div className="text-xs">{item.desc}</div>
+                  <div className="flex items-center space-x-1 text-xs mt-1">
                     <Image src={coins} width={16} height={16} alt="coins" />
                     <span>{pointFormat(item.price)}</span>
                   </div>

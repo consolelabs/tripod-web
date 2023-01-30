@@ -126,7 +126,7 @@ export const Guides = () => {
       <button
         type="button"
         onClick={onOpen}
-        className="flex space-x-2 items-center justify-center rounded bg-tripod-900 text-white px-4 py-2 fixed top-0 right-0 m-4"
+        className="flex space-x-2 items-center justify-center rounded bg-tripod-900 text-white text-xs px-2 py-2 fixed top-0 right-0 m-4"
       >
         <AiOutlineInfoCircle />
         <span>Guides</span>
@@ -134,14 +134,14 @@ export const Guides = () => {
       <Modal
         isOpen={isOpen}
         onRequestClose={onClose}
-        overlayClassName="fixed top-0 left-0 w-full h-full bg-black/70 flex p-4 py-16 overflow-auto xl:overflow-hidden"
+        overlayClassName="fixed top-0 left-0 w-full h-full bg-black/70 flex p-4 py-16 overflow-auto lg:overflow-hidden"
         className="m-auto w-full h-full max-w-[1280px] max-h-[800px] text-white"
       >
-        <div className="grid grid-cols-2 gap-4 xl:h-full xl:overflow-hidden">
-          <div className="col-span-2 xl:col-span-1 flex flex-col space-y-4 px-4 py-8 xl:px-8 bg-tripod-900/70 rounded backdrop-blur xl:overflow-auto">
+        <div className="grid grid-cols-2 gap-4 lg:h-full lg:overflow-hidden">
+          <div className="col-span-2 lg:col-span-1 flex flex-col space-y-4 px-4 py-8 lg:px-8 bg-tripod-900/70 rounded backdrop-blur lg:overflow-auto">
             {objectRender}
           </div>
-          <div className="col-span-2 xl:col-span-1 flex flex-col space-y-4 px-4 py-8 xl:px-8 bg-tripod-900/70 rounded backdrop-blur xl:overflow-auto">
+          <div className="col-span-2 lg:col-span-1 flex flex-col space-y-4 px-4 py-8 lg:px-8 bg-tripod-900/70 rounded backdrop-blur lg:overflow-auto">
             {howToPlayRender}
           </div>
         </div>
