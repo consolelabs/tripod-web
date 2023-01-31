@@ -129,8 +129,8 @@ export const History = () => {
 
   return (
     <div className="text-white h-full flex flex-col space-y-2 overflow-hidden">
-      <div className="font-bold text-xl">History</div>
-      <div className="rounded-md bg-tripod-900/70 flex-1 h-full text-white relative">
+      <div className="font-bold text-lg">History</div>
+      <div className="rounded-md bg-tripod-900/70 flex-1 h-full text-white relative text-sm">
         <div className="flex flex-col space-y-2 absolute top-0 left-0 w-full h-full overflow-auto p-4">
           {history.length > 0
             ? history.map((e, index) => {

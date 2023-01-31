@@ -39,8 +39,8 @@ export default function Home() {
           return play ? (
             <div className="min-h-screen min-w-screen relative bg-map">
               <div className="absolute w-full h-full px-4 py-16 overflow-auto flex">
-                <div className="grid grid-cols-4 max-w-[1280px] w-full m-auto gap-4">
-                  <div className="col-span-4 text-white text-xs xl:text-xl grid grid-cols-2 xl:grid-cols-4 gap-2">
+                <div className="grid grid-cols-10 max-w-[1200px] w-full m-auto gap-4">
+                  <div className="col-span-10 text-white text-xs lg:text-base grid grid-cols-2 lg:grid-cols-4 gap-2">
                     <div className="px-3 py-2 rounded-md bg-tripod-900/70 h-12">
                       <div className="flex items-center justify-between h-full">
                         <span>Points</span>
@@ -103,15 +103,15 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-4 xl:col-span-1 order-3 xl:order-none min-h-[320px]">
+                  <div className="col-span-10 lg:col-span-3 order-3 lg:order-none min-h-[320px]">
                     <History />
                   </div>
-                  <div className="col-span-4 xl:col-span-2">
-                    <div className="max-w-[320px] xl:max-w-[unset] mx-auto">
+                  <div className="col-span-10 lg:col-span-4">
+                    <div className="max-w-[320px] lg:max-w-[unset] mx-auto">
                       <Board />
                     </div>
                   </div>
-                  <div className="col-span-4 xl:col-span-1">
+                  <div className="col-span-10 lg:col-span-3">
                     <Shop />
                   </div>
                 </div>
