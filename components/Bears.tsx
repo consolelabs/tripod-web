@@ -8,6 +8,10 @@ import { useEffect, useRef, useState } from "react";
 
 const GRID_SIZE = 6;
 
+function getUIPos(coord: number) {
+  return `${(coord / GRID_SIZE) * 100}%`;
+}
+
 const Bear = ({
   bear,
   onAfterDestroy,
@@ -15,18 +19,27 @@ const Bear = ({
   bear: BearPiece;
   onAfterDestroy: () => void;
 }) => {
-  const previousPosition = useRef<any>({});
+  const left = getUIPos(bear.coord.x);
+  const top = getUIPos(bear.coord.y);
+
+  const previousPosition = useRef<{ top: string; left: string }>({
+    top: bear.initialCoord ? getUIPos(bear.initialCoord.y) : "",
+    left: bear.initialCoord ? getUIPos(bear.initialCoord.x) : "",
+  });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rocketRef = useRef<HTMLImageElement | null>(null);
   const smokeRef = useRef<LottieRefCurrentProps>(null);
   const [initialSmokeAnimationSegment, setInitialSmokeAnimationSegment] =
     useState([25, 26]);
 
-  const left = `${(bear.coord.x / GRID_SIZE) * 100}%`;
-  const top = `${(bear.coord.y / GRID_SIZE) * 100}%`;
-
   useEffect(() => {
-    if (containerRef.current && rocketRef.current && smokeRef.current) {
+    if (
+      containerRef.current &&
+      rocketRef.current &&
+      smokeRef.current &&
+      (top !== previousPosition.current.top ||
+        left !== previousPosition.current.left)
+    ) {
       const moveAnimation = [
         {
           offset: 0,
@@ -89,14 +102,17 @@ const Bear = ({
         fill: "forwards",
       });
 
-      if (previousPosition.current.top && previousPosition.current.left) {
-        // Trigger smoke animation on rocket land
-        setTimeout(() => {
-          smokeRef.current?.goToAndPlay(0);
-        }, 450);
-      } else {
+      if (
+        !previousPosition.current.top ||
+        !previousPosition.current.left ||
+        bear.initialCoord
+      ) {
         setInitialSmokeAnimationSegment([0, 26]);
       }
+
+      setTimeout(() => {
+        smokeRef.current?.goToAndPlay(0);
+      }, 450);
 
       previousPosition.current.top = top;
       previousPosition.current.left = left;
@@ -112,8 +128,8 @@ const Bear = ({
       ref={containerRef}
       className="absolute w-1/6 h-1/6"
       style={{
-        top,
-        left,
+        top: bear.initialCoord ? previousPosition.current.top : top,
+        left: bear.initialCoord ? previousPosition.current.left : left,
       }}
     >
       <Lottie
