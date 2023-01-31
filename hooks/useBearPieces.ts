@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Game, PieceEnum } from "triple-pod-game-engine";
+import { PieceEnum } from "triple-pod-game-engine";
 import { v4 as uuidv4 } from "uuid";
 import { useGameContext } from "../contexts/game";
 
@@ -8,12 +8,25 @@ const GRID_SIZE = 6;
 export class BearPiece {
   id: string;
   pieceId: PieceEnum;
+  initialCoord?: { x: number; y: number };
   coord: { x: number; y: number };
   destroyed = false;
 
-  constructor(pieceId: PieceEnum, x: number, y: number) {
+  constructor(
+    pieceId: PieceEnum,
+    x: number,
+    y: number,
+    initialX?: number,
+    initialY?: number
+  ) {
     this.id = uuidv4();
     this.pieceId = pieceId;
+    if (typeof initialX === "number" && typeof initialY === "number") {
+      this.initialCoord = {
+        x: initialX,
+        y: initialY,
+      };
+    }
     this.coord = {
       x,
       y,
@@ -62,7 +75,7 @@ export const useBearPieces = () => {
           );
 
           // If we cannot find a move event attached to this bear,
-          // it's a new bear
+          // it's a new bear on the 1st turn of the game
           if (!bearMoveEvent) {
             // Get the nearest null position in the bearPieces array
             const nullIndex = newBearPieces.findIndex((piece) => !piece);
@@ -88,18 +101,21 @@ export const useBearPieces = () => {
             if (index >= 0) {
               newBearPieces[index]!.coord.x = bearMoveEvent.to.x;
               newBearPieces[index]!.coord.y = bearMoveEvent.to.y;
+              delete newBearPieces[index]?.initialCoord;
               bearMoveChecks[index] = true;
             } else {
-              // If we can't find its index, also a new bear?
-              // FIXME: Weird
+              // this is also a new bear, but we are already in the middle of the game,
+              // so this bear has just been placed by the player
 
               // Get the nearest null position in the bearPieces array
               const nullIndex = newBearPieces.findIndex((piece) => !piece);
 
               newBearPieces[nullIndex] = new BearPiece(
                 col.id,
-                colIndex,
-                rowIndex
+                bearMoveEvent.to.x,
+                bearMoveEvent.to.y,
+                bearMoveEvent.from.x,
+                bearMoveEvent.from.y
               );
               bearMoveChecks[nullIndex] = true;
             }

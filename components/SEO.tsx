@@ -38,6 +38,7 @@ export const SEO = () => {
         property="twitter:image"
         content={`${WEB_URL}/horizontal-wallpaper.jpg`}
       />
+      <link rel="icon" href={`${WEB_URL}/favicon.ico`} />
     </Head>
   );
 };
