@@ -7,7 +7,17 @@
 }
 
 * {
-  cursor: url(../public/cursor.png), auto;
+  cursor: url(../public/cursor.png), auto !important;
+}
+
+button {
+  box-shadow: 2px 2px 2px #4c628a;
+  transition: all 0.1s;
+}
+
+button:active {
+  box-shadow: 0 0 0 #4c628a, inset 2px 2px 2px #4c628a;
+  transform: translate(2px, 2px);
 }
 
 body {
