@@ -19,6 +19,7 @@ interface GameContextValues {
   selectedCells: number[][];
   hoveredCell: number[];
   isUpdating: boolean;
+  isGameDone: boolean;
   put: (x: number, y: number) => void;
   buy: (itemIndex: number) => void;
   use: (pieceId: number, params?: Record<string, any>) => void;
@@ -26,6 +27,8 @@ interface GameContextValues {
   setSelectedCells: Dispatch<SetStateAction<number[][]>>;
   setHoveredCell: Dispatch<SetStateAction<number[]>>;
   putPreview: (x: number, y: number) => void;
+  setIsGameDone: Dispatch<SetStateAction<boolean>>;
+  newGame: () => void;
 }
 
 const [Provider, useGameContext] = createContext<GameContextValues>({
@@ -38,6 +41,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
   const [selectedCells, setSelectedCells] = useState<number[][]>([]);
   const [hoveredCell, setHoveredCell] = useState<number[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isGameDone, setIsGameDone] = useState(false);
 
   const rerender = () => {
     setRenderCount(Date.now());
@@ -100,11 +104,17 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
     rerender();
   };
 
-  useEffect(() => {
+  const newGame = () => {
     const newGame = new Game();
     setGame(newGame);
     newGame.start();
-  }, []);
+    rerender();
+    setIsGameDone(false);
+  };
+
+  useEffect(() => {
+    newGame();
+  }, []); // eslint-disable-line
 
   return (
     <Provider
@@ -114,6 +124,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
         selectedCells,
         hoveredCell,
         isUpdating,
+        isGameDone,
         put,
         buy,
         use,
@@ -121,6 +132,8 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
         setSelectedCells,
         setHoveredCell,
         putPreview,
+        setIsGameDone,
+        newGame,
       }}
     >
       {children}

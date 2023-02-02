@@ -13,6 +13,7 @@ import {
 } from "triple-pod-game-engine";
 import { useTransition, animated } from "@react-spring/web";
 import { Bears } from "./Bears";
+import { GameEndDialog } from "./GameEndDialog";
 
 type Props = {
   debug?: boolean;
@@ -92,10 +93,12 @@ export const Board = ({ debug = false }: Props) => {
     renderCount,
     selectedCells,
     hoveredCell,
+    isGameDone,
     put,
     use,
     swap,
     setSelectedCells,
+    setIsGameDone,
   } = useGameContext();
 
   const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
@@ -172,6 +175,11 @@ export const Board = ({ debug = false }: Props) => {
 
   useEffect(() => {
     setPieceToPut(game.state.currentPiece);
+
+    // Check if game has ended
+    if (game.done) {
+      setIsGameDone(true);
+    }
   }, [renderCount]); // eslint-disable-line
 
   return (
@@ -284,6 +292,7 @@ export const Board = ({ debug = false }: Props) => {
           <Bears />
         </div>
       </div>
+      {isGameDone && <GameEndDialog />}
     </div>
   );
 };

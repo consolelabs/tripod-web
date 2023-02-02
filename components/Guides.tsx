@@ -2,11 +2,11 @@
 
 import { useDisclosure } from "@dwarvesf/react-hooks";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import Modal from "react-modal";
+import ReactModal from "react-modal";
 import { PieceEnum } from "triple-pod-game-engine";
 import { renderInlinePiece } from "./History";
 
-Modal.setAppElement("body");
+ReactModal.setAppElement("body");
 
 export const Guides = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -123,15 +123,7 @@ export const Guides = () => {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={onOpen}
-        className="flex space-x-2 items-center justify-center rounded bg-tripod-900 text-white text-xs px-2 py-2 fixed top-0 right-0 m-4"
-      >
-        <AiOutlineInfoCircle />
-        <span>Guides</span>
-      </button>
-      <Modal
+      <ReactModal
         isOpen={isOpen}
         onRequestClose={onClose}
         overlayClassName="fixed top-0 left-0 w-full h-full bg-black/70 flex p-4 py-16 overflow-auto lg:overflow-hidden"
@@ -145,7 +137,21 @@ export const Guides = () => {
             {howToPlayRender}
           </div>
         </div>
-      </Modal>
+      </ReactModal>
+      <button
+        type="button"
+        onClick={isOpen ? onClose : onOpen}
+        className="flex space-x-2 items-center justify-center rounded bg-tripod-900 text-white text-xs px-2 py-2 fixed top-0 right-0 m-4 z-10"
+      >
+        {isOpen ? (
+          "Close"
+        ) : (
+          <>
+            <AiOutlineInfoCircle />
+            <span>Guides</span>
+          </>
+        )}
+      </button>
     </>
   );
 };
