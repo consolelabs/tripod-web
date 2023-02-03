@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { PieceEnum } from "triple-pod-game-engine";
 import { mappings } from "../constants/mappings";
 import { useGameContext } from "../contexts/game";
@@ -19,11 +19,13 @@ export const renderInlinePiece = (id: PieceEnum) => {
 };
 
 export const History = () => {
-  const { game, renderCount } = useGameContext();
+  const { game, renderCount, playAudio } = useGameContext();
+  const latestRoundIndex = useRef(0);
 
   const history = useMemo(() => {
-    return game.history.map((m, i) => {
+    const _history = game.history.map((m, i) => {
       const events: any = game.state.events[i] || [];
+      const currentRoundIndex = game.history.length - i;
 
       const condenses = [...events]
         .filter((e) => e.type === "condense")
@@ -62,6 +64,11 @@ export const History = () => {
               <>Boom, {renderInlinePiece(destroy.pieces[0])} was destroyed</>
             );
           }
+
+          if (isMatch && currentRoundIndex > latestRoundIndex.current) {
+            playAudio("merge");
+          }
+
           return (
             <>
               {isCombo ? "Combo!!" : isMatch ? "Match!" : "Placed"} (
@@ -123,6 +130,10 @@ export const History = () => {
           return "";
       }
     });
+
+    latestRoundIndex.current = game.history.length;
+
+    return _history;
   }, [game, renderCount]); // eslint-disable-line
 
   return (

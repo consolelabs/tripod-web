@@ -17,7 +17,7 @@ const pointFormat = new Intl.NumberFormat().format;
 
 export default function Home() {
   const [play, setPlay] = useState(false);
-  const { game, renderCount, hoveredCell } = useGameContext();
+  const { game, renderCount, hoveredCell, playAudio } = useGameContext();
 
   const hoveredPiece = useMemo(() => {
     if (hoveredCell.length === 0) {
@@ -116,11 +116,11 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <Guides />
             </div>
           ) : (
             <WelcomeScreen
               play={() => {
+                playAudio("start");
                 anim.addEventListener(
                   "finish",
                   () => {
@@ -137,6 +137,7 @@ export default function Home() {
           );
         }}
       </TransitionScreen>
+      <Guides />
     </>
   );
 }

@@ -9,11 +9,12 @@ import {
 import { toast } from "react-toastify";
 import { Data, Game } from "triple-pod-game-engine";
 import { shopItems } from "../constants/shopItems";
+import { useAudio } from "../hooks/useAudio";
 
 // Delay between each move
 const DELAY = 700;
 
-interface GameContextValues {
+type GameContextValues = {
   game: Game;
   renderCount: number;
   selectedCells: number[][];
@@ -29,7 +30,7 @@ interface GameContextValues {
   putPreview: (x: number, y: number) => void;
   setIsGameDone: Dispatch<SetStateAction<boolean>>;
   newGame: () => void;
-}
+} & ReturnType<typeof useAudio>;
 
 const [Provider, useGameContext] = createContext<GameContextValues>({
   name: "game",
@@ -42,6 +43,8 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
   const [hoveredCell, setHoveredCell] = useState<number[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isGameDone, setIsGameDone] = useState(false);
+
+  const useAudioProps = useAudio();
 
   const rerender = () => {
     setRenderCount(Date.now());
@@ -134,6 +137,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
         putPreview,
         setIsGameDone,
         newGame,
+        ...useAudioProps,
       }}
     >
       {children}

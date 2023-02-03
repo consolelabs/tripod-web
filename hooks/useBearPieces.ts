@@ -35,7 +35,7 @@ export class BearPiece {
 }
 
 export const useBearPieces = () => {
-  const { game } = useGameContext();
+  const { game, playAudio } = useGameContext();
 
   // Extend the Piece type
   // 1. coord as the identifier & dictates where to render the bear
@@ -131,6 +131,11 @@ export const useBearPieces = () => {
           newBearPieces[index]!.destroyed = true;
         }
       });
+
+      // If there's any destroyed bear, play the explosion track
+      if (newBearPieces.some((bear) => bear?.destroyed)) {
+        playAudio("explosion");
+      }
 
       setBearPieces(newBearPieces);
     }

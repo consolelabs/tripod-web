@@ -14,6 +14,7 @@ import {
 import { useTransition, animated } from "@react-spring/web";
 import { Bears } from "./Bears";
 import { GameEndDialog } from "./GameEndDialog";
+import { useAudio } from "../hooks/useAudio";
 
 type Props = {
   debug?: boolean;
@@ -37,7 +38,7 @@ const TripodPiece = ({
       x: "0%",
       y: "0%",
     },
-    leave: (item) => {
+    leave: (item: any) => {
       const pieceKeys = Object.keys(
         levelByPiece
       ) as unknown as Array<PieceEnum>;
@@ -99,6 +100,7 @@ export const Board = ({ debug = false }: Props) => {
     swap,
     setSelectedCells,
     setIsGameDone,
+    playAudio,
   } = useGameContext();
 
   const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
@@ -115,6 +117,8 @@ export const Board = ({ debug = false }: Props) => {
     if (!game) {
       return;
     }
+
+    playAudio("click");
 
     const currentPos = [x, y];
 

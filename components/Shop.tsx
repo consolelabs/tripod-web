@@ -13,7 +13,7 @@ import coins from "../public/coins.png";
 const pointFormat = new Intl.NumberFormat().format;
 
 export const Shop = () => {
-  const { game, isUpdating, buy, use } = useGameContext();
+  const { game, isUpdating, buy, use, playAudio } = useGameContext();
   const {
     isOpen: isConfirmationModalOpen,
     onOpen: openConfirmationModal,
@@ -36,9 +36,11 @@ export const Shop = () => {
 
     if (game.state.coins < itemToBuy.price) {
       toast("Not enough coin!");
+      playAudio("error");
       return;
     }
 
+    playAudio("buy");
     buy(id);
 
     switch (id) {
@@ -70,6 +72,7 @@ export const Shop = () => {
                     if (!isUpdating) {
                       selectedItemId.current = item.id;
                       openConfirmationModal();
+                      playAudio("click");
                     }
                   }}
                 >
@@ -95,7 +98,10 @@ export const Shop = () => {
       </div>
       <ReactModal
         isOpen={isConfirmationModalOpen}
-        onRequestClose={closeConfirmationModal}
+        onRequestClose={() => {
+          closeConfirmationModal();
+          playAudio("click");
+        }}
         overlayClassName="fixed top-0 left-0 w-full h-full bg-black/70 flex"
         className="m-auto px-8 py-4 w-full max-w-[300px] bg-tripod-900 rounded-lg text-white"
       >
@@ -105,7 +111,10 @@ export const Shop = () => {
             <button
               type="button"
               className="px-2 py-1 text-sm !shadow-none"
-              onClick={closeConfirmationModal}
+              onClick={() => {
+                closeConfirmationModal();
+                playAudio("click");
+              }}
             >
               Cancel
             </button>

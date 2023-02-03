@@ -2,13 +2,16 @@
 
 import { useDisclosure } from "@dwarvesf/react-hooks";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import ReactModal from "react-modal";
 import { PieceEnum } from "triple-pod-game-engine";
+import { useGameContext } from "../contexts/game";
 import { renderInlinePiece } from "./History";
 
 ReactModal.setAppElement("body");
 
 export const Guides = () => {
+  const { isBgAudioEnabled, toggleBgAudio, playAudio } = useGameContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const objectRender = (
@@ -125,7 +128,10 @@ export const Guides = () => {
     <>
       <ReactModal
         isOpen={isOpen}
-        onRequestClose={onClose}
+        onRequestClose={() => {
+          playAudio("click");
+          onClose();
+        }}
         overlayClassName="fixed top-0 left-0 w-full h-full bg-black/70 flex p-4 py-16 overflow-auto lg:overflow-hidden"
         className="m-auto w-full h-full max-w-[1280px] max-h-[800px] text-white"
       >
@@ -138,20 +144,36 @@ export const Guides = () => {
           </div>
         </div>
       </ReactModal>
-      <button
-        type="button"
-        onClick={isOpen ? onClose : onOpen}
-        className="flex space-x-2 items-center justify-center rounded bg-tripod-900 text-white text-xs px-2 py-2 fixed top-0 right-0 m-4 z-10"
-      >
-        {isOpen ? (
-          "Close"
-        ) : (
-          <>
-            <AiOutlineInfoCircle />
-            <span>Guides</span>
-          </>
-        )}
-      </button>
+      <div className="flex items-center space-x-4 justify-center fixed top-0 right-0 m-4 z-10">
+        <button
+          type="button"
+          onClick={() => {
+            playAudio("click");
+            isOpen ? onClose() : onOpen();
+          }}
+          className="flex space-x-2 items-center justify-center rounded bg-tripod-900 text-white text-xs px-2 py-2"
+        >
+          {isOpen ? (
+            "Close"
+          ) : (
+            <>
+              <AiOutlineInfoCircle />
+              <span>Guides</span>
+            </>
+          )}
+        </button>
+        <button
+          type="button"
+          className="text-white !shadow-none w-8 h-8 flex items-center justify-center"
+          onClick={toggleBgAudio}
+        >
+          {isBgAudioEnabled ? (
+            <HiSpeakerWave size={24} />
+          ) : (
+            <HiSpeakerXMark size={24} />
+          )}
+        </button>
+      </div>
     </>
   );
 };
