@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Board } from "../components/Board";
 import { History } from "../components/History";
 import { SEO } from "../components/SEO";
@@ -12,12 +12,15 @@ import coins from "../public/coins.png";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import Tippy from "@tippyjs/react";
 import { Guides } from "../components/Guides";
+import Postmate from "postmate";
 
 const pointFormat = new Intl.NumberFormat().format;
 
 export default function Home() {
+  const [parent, setParent] = useState<Postmate.ChildAPI>();
   const [play, setPlay] = useState(false);
-  const { game, renderCount, hoveredCell, playAudio } = useGameContext();
+  const { game, renderCount, hoveredCell, playAudio, isGameDone } =
+    useGameContext();
 
   const hoveredPiece = useMemo(() => {
     if (hoveredCell.length === 0) {
@@ -26,6 +29,18 @@ export default function Home() {
 
     return game?.state.board[hoveredCell[1]][hoveredCell[0]];
   }, [game, hoveredCell]);
+
+  useEffect(() => {
+    new Postmate.Model({}).then((parent) => {
+      setParent(parent);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isGameDone) {
+      parent?.emit("game-point", { point: game.state.points, game: "tripod" });
+    }
+  }, [isGameDone]);
 
   if (!game) {
     return <SEO />;
