@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useMemo, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { PieceEnum } from "triple-pod-game-engine";
 import { mappings } from "../constants/mappings";
 import { useGameContext } from "../contexts/game";
@@ -27,42 +27,37 @@ export const History = () => {
       const events: any = game.state.events[i] || [];
       const currentRoundIndex = game.history.length - i;
 
-      const condenses = [...events]
-        .filter((e) => e.type === "condense")
-        .map((e, i) => {
+      const condenses = events
+        .filter((e: any) => e.type === "condense")
+        .map((e: any, i: number) => {
           if (i === 0) {
             return (
-              <>
-                {renderInlinePiece(e.from)}
-                {" -> "}
-                {renderInlinePiece(e.to)}
-              </>
+              <React.Fragment key={`condense-${e.from}-${e.to}`}>
+                {renderInlinePiece(e.from)} {"->"} {renderInlinePiece(e.to)}
+              </React.Fragment>
             );
           }
           return (
-            <>
-              {" -> "}
-              {renderInlinePiece(e.to)}
-            </>
+            <React.Fragment key={`condense-${e.to}`}>
+              {" "}
+              {"->"} {renderInlinePiece(e.to)}
+            </React.Fragment>
           );
         })
         .filter(Boolean);
-      const destroy = [...events]
-        .reverse()
-        .filter((e) => e.type === "destroy")[0];
-      const isMiss = events.reverse().some((e: any) => e.type === "miss");
+      const destroy = events.filter((e: any) => e.type === "destroy")[0];
+      const isMiss = events.some((e: any) => e.type === "miss");
       const isCombo = condenses.length > 1;
       const isMatch = condenses.length > 0;
-      const comboStr = condenses.map((e) => <>{e}</>);
 
       switch (m.type) {
         case "put": {
           if (isMiss) {
             return `Unstable bomb missed!? (${[m.x, m.y]})`;
           } else if (destroy && destroy.type === "destroy") {
-            return (
-              <>Boom, {renderInlinePiece(destroy.pieces[0])} was destroyed</>
-            );
+            return `Boom, ${renderInlinePiece(
+              destroy.pieces[0]
+            )} was destroyed`;
           }
 
           if (isMatch && currentRoundIndex > latestRoundIndex.current) {
@@ -71,16 +66,9 @@ export const History = () => {
 
           return (
             <>
-              {isCombo ? "Combo!!" : isMatch ? "Match!" : "Placed"} (
-              {[m.x, m.y].join(",")})
-              {isMatch || isCombo ? (
-                <>
-                  {", "}
-                  {comboStr}
-                </>
-              ) : (
-                ""
-              )}
+              {isCombo ? "Combo!!" : isMatch ? "Match!" : "Placed"}{" "}
+              {[m.x, m.y].join(",")}
+              {isMatch || isCombo ? <>, {condenses}</> : ""}
             </>
           );
         }
