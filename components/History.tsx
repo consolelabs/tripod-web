@@ -45,19 +45,29 @@ export const History = () => {
           );
         })
         .filter(Boolean);
-      const destroy = events.filter((e: any) => e.type === "destroy")[0];
+      const destroy = events.filter(
+        (e: any) => e.type === "destroy" || e.type === "transform"
+      )[0];
       const isMiss = events.some((e: any) => e.type === "miss");
       const isCombo = condenses.length > 1;
       const isMatch = condenses.length > 0;
 
+      console.log(game.state.events);
       switch (m.type) {
         case "put": {
           if (isMiss) {
             return `Unstable bomb missed!? (${[m.x, m.y]})`;
-          } else if (destroy && destroy.type === "destroy") {
+          } else if (destroy?.type === "destroy") {
             return `Boom, ${renderInlinePiece(
               destroy.pieces[0]
             )} was destroyed`;
+          } else if (
+            destroy?.type === "transform" &&
+            (destroy.from === PieceEnum.BEAR ||
+              destroy.from === PieceEnum.NINJA_BEAR) &&
+            destroy.to === PieceEnum.TOMB
+          ) {
+            return `Bullseye! A droid was taken down`;
           }
 
           if (isMatch && currentRoundIndex > latestRoundIndex.current) {
