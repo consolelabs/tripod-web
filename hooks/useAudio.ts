@@ -76,6 +76,7 @@ export const useAudio = () => {
       } else {
         bg!.play();
         bg!.muted = false;
+        bg!.loop = true;
         return true;
       }
     });
