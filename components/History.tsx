@@ -52,7 +52,6 @@ export const History = () => {
       const isCombo = condenses.length > 1;
       const isMatch = condenses.length > 0;
 
-      console.log(game.state.events);
       switch (m.type) {
         case "put": {
           if (isMiss) {
