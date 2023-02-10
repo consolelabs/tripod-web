@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isSSR } from "../consts";
 
 type AudioType = "click" | "start" | "merge" | "explosion" | "buy" | "error";
@@ -68,20 +68,53 @@ export const useAudio = () => {
   };
 
   const [isBgAudioEnabled, setIsBgAudioEnabled] = useState(false);
+  const isBgAudioEnabledRef = useRef(false);
   const toggleBgAudio = () => {
     setIsBgAudioEnabled((o) => {
       if (o) {
         bg!.muted = true;
+
         return false;
       } else {
         bg!.play();
         bg!.muted = false;
         bg!.loop = true;
+
         return true;
       }
     });
     playAudio("click");
   };
+
+  useEffect(() => {
+    if (!bg) {
+      return;
+    }
+
+    const mute = () => {
+      if (isBgAudioEnabledRef.current) {
+        bg.muted = true;
+      }
+    };
+
+    const unmute = () => {
+      if (isBgAudioEnabledRef.current) {
+        bg.muted = false;
+      }
+    };
+
+    window.addEventListener("blur", mute);
+    window.addEventListener("focus", unmute);
+
+    return () => {
+      window.removeEventListener("blur", mute);
+      window.removeEventListener("focus", unmute);
+    };
+  }, [bg]); // eslint-disable-line
+
+  useEffect(() => {
+    isBgAudioEnabledRef.current = isBgAudioEnabled;
+  }, [isBgAudioEnabled]);
 
   return {
     isBgAudioEnabled,
