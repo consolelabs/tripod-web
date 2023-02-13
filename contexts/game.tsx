@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   SetStateAction,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { toast } from "react-toastify";
@@ -12,7 +13,7 @@ import { shopItems } from "../constants/shopItems";
 import { useAudio } from "../hooks/useAudio";
 
 // Delay between each move
-const DELAY = 700;
+const DELAY = 300;
 
 type GameContextValues = {
   game: Game;
@@ -43,6 +44,7 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
   const [hoveredCell, setHoveredCell] = useState<number[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isGameDone, setIsGameDone] = useState(false);
+  const overclickCount = useRef(0);
 
   const useAudioProps = useAudio();
 
@@ -52,6 +54,13 @@ const GameContextProvider = ({ children }: PropsWithChildren) => {
 
   const updateGameState = (data: Data, delay = true) => {
     if (isUpdating) {
+      overclickCount.current += 1;
+
+      if (overclickCount.current > 2) {
+        toast("You are clicking too fast! Please slow down a bit!");
+        overclickCount.current = 0;
+      }
+
       return;
     }
 

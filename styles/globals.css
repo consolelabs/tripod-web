@@ -7,7 +7,7 @@
 }
 
 * {
-  cursor: url(../public/cursor.png), auto !important;
+  cursor: url(../public/cursor.png) 10 10, auto !important;
 }
 
 button {

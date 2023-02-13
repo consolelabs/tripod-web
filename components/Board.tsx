@@ -14,7 +14,6 @@ import {
 import { useTransition, animated } from "@react-spring/web";
 import { Bears } from "./Bears";
 import { GameEndDialog } from "./GameEndDialog";
-import { useAudio } from "../hooks/useAudio";
 
 type Props = {
   debug?: boolean;
@@ -95,12 +94,14 @@ export const Board = ({ debug = false }: Props) => {
     selectedCells,
     hoveredCell,
     isGameDone,
+    isUpdating,
     put,
     use,
     swap,
     setSelectedCells,
     setIsGameDone,
     playAudio,
+    setHoveredCell,
   } = useGameContext();
 
   const [pieceToPut, setPieceToPut] = useState<Piece | undefined>();
@@ -222,11 +223,7 @@ export const Board = ({ debug = false }: Props) => {
                 (rowIndex !== 0 || colIndex !== 0) &&
                 isEmpty &&
                 pieceToPut &&
-                ![
-                  PieceEnum.TELEPORT_PORTAL,
-                  PieceEnum.MEGA_BOMB,
-                  PieceEnum.BOMB,
-                ].includes(pieceToPut?.id);
+                ![PieceEnum.TELEPORT_PORTAL].includes(pieceToPut?.id);
 
               return (
                 <div
@@ -241,6 +238,9 @@ export const Board = ({ debug = false }: Props) => {
                   onClick={() =>
                     onCellClick({ x: colIndex, y: rowIndex, isEmpty })
                   }
+                  onMouseOver={() => {
+                    setHoveredCell([colIndex, rowIndex]);
+                  }}
                 >
                   {/* Storage */}
                   {rowIndex === 0 && colIndex === 0 && (

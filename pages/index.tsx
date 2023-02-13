@@ -13,22 +13,51 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import Tippy from "@tippyjs/react";
 import { Guides } from "../components/Guides";
 import Postmate from "postmate";
+import { Hint } from "../components/Hint";
+import { PieceEnum, robot } from "triple-pod-game-engine";
+import { shopItems } from "../constants/shopItems";
 
 const pointFormat = new Intl.NumberFormat().format;
 
 export default function Home() {
   const [parent, setParent] = useState<Postmate.ChildAPI>();
   const [play, setPlay] = useState(false);
-  const { game, renderCount, hoveredCell, playAudio, isGameDone } =
-    useGameContext();
+  const { game, renderCount, playAudio, isGameDone } = useGameContext();
 
-  const hoveredPiece = useMemo(() => {
-    if (hoveredCell.length === 0) {
-      return;
+  const {
+    isBoardFull = false,
+    isPurchasingAvailable = false,
+    isSwappingAvailable = false,
+  } = useMemo(() => {
+    if (!game) {
+      return {};
     }
 
-    return game?.state.board[hoveredCell[1]][hoveredCell[0]];
-  }, [game, hoveredCell]);
+    let isBoardFull = true;
+    for (let i = 0; i < game.state.board.length; i++) {
+      for (let j = 0; j < game.state.board[0].length; j++) {
+        if (i === 0 && j === 0) {
+          continue;
+        }
+
+        if (game.state.board[i][j].id === PieceEnum.EMPTY) {
+          isBoardFull = false;
+        }
+      }
+    }
+
+    const itemsThatWillAffectGameEnd = shopItems.filter(
+      (item) => item.willAffectGameEnd
+    );
+    const isPurchasingAvailable = itemsThatWillAffectGameEnd.some(
+      (item) => item.price <= game.state.coins
+    );
+    const isSwappingAvailable = [...itemsThatWillAffectGameEnd, robot].some(
+      (item) => game.state.swapPiece?.id === item.id
+    );
+
+    return { isBoardFull, isPurchasingAvailable, isSwappingAvailable };
+  }, [renderCount]); // eslint-disable-line
 
   useEffect(() => {
     new Postmate.Model({}).then((parent) => {
@@ -40,7 +69,7 @@ export default function Home() {
     if (isGameDone) {
       parent?.emit("game-point", { point: game.state.points, game: "tripod" });
     }
-  }, [isGameDone]);
+  }, [isGameDone]); // eslint-disable-line
 
   if (!game) {
     return <SEO />;
@@ -68,11 +97,14 @@ export default function Home() {
                       <div className="px-3 py-2 flex items-center justify-between h-12">
                         <span>Current</span>
                         <Image
+                          key={
+                            (mappings[game.state.currentPiece.id]
+                              .image as any) || renderCount
+                          }
                           src={mappings[game.state.currentPiece.id].image}
                           width={32}
                           height={32}
                           alt="next piece"
-                          key={renderCount}
                         />
                       </div>
                     </div>
@@ -80,15 +112,22 @@ export default function Home() {
                       <div className="px-3 py-2 flex items-center justify-between h-12">
                         <span>Next Tier</span>
                         <span className="flex items-center space-x-2 justify-center">
-                          {hoveredPiece && hoveredPiece.nextTierPiece ? (
+                          {game.state.currentPiece &&
+                          game.state.currentPiece.nextTierPiece ? (
                             <Image
+                              key={
+                                (mappings[
+                                  game.state.currentPiece.nextTierPiece.id
+                                ].image as any) || renderCount
+                              }
                               src={
-                                mappings[hoveredPiece.nextTierPiece.id].image
+                                mappings[
+                                  game.state.currentPiece.nextTierPiece.id
+                                ].image
                               }
                               width={32}
                               height={32}
                               alt="next piece"
-                              key={renderCount}
                             />
                           ) : (
                             <span className="text-gray-500">-</span>
@@ -101,7 +140,11 @@ export default function Home() {
                         </span>
                       </div>
                     </div>
-                    <div className="px-3 py-2 rounded-md bg-tripod-900/70 h-12">
+                    <Hint
+                      enabled={isBoardFull && isPurchasingAvailable}
+                      hint="You still have coins left! Buy an item to keep fighting!"
+                      className="px-3 py-2 rounded-md bg-tripod-900/70 h-12"
+                    >
                       <div className="flex items-center justify-between h-full">
                         <span>Coins</span>
                         <span className="flex items-center space-x-2">
@@ -116,15 +159,20 @@ export default function Home() {
                           </span>
                         </span>
                       </div>
-                    </div>
+                    </Hint>
                   </div>
                   <div className="col-span-10 lg:col-span-3 order-3 lg:order-none min-h-[320px]">
                     <History />
                   </div>
                   <div className="col-span-10 lg:col-span-4">
-                    <div className="max-w-[320px] lg:max-w-[unset] mx-auto">
+                    <Hint
+                      className="max-w-[320px] lg:max-w-[unset] mx-auto"
+                      enabled={isBoardFull && isSwappingAvailable}
+                      hint="You still have one trick up your storage! Don't give up too soon!"
+                      placement="bottom"
+                    >
                       <Board />
-                    </div>
+                    </Hint>
                   </div>
                   <div className="col-span-10 lg:col-span-3">
                     <Shop />

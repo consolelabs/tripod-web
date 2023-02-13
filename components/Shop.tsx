@@ -103,14 +103,19 @@ export const Shop = () => {
           playAudio("click");
         }}
         overlayClassName="fixed top-0 left-0 w-full h-full bg-black/70 flex"
-        className="m-auto px-8 py-4 w-full max-w-[300px] bg-tripod-900 rounded-lg text-white"
+        className="m-auto px-4 py-4 w-full max-w-[320px] bg-tripod-900 rounded-lg text-white"
       >
         <div className="flex flex-col space-y-6 text-center">
-          <div>Are you sure you want to use this item?</div>
+          <div>
+            Are you sure you want to buy this item?{" "}
+            <span className="text-red-500">
+              This will replace any piece/item you are holding!
+            </span>
+          </div>
           <div className="flex items-center justify-end space-x-2">
             <button
               type="button"
-              className="px-2 py-1 text-sm !shadow-none"
+              className="px-2 py-1 text-sm bg-tripod"
               onClick={() => {
                 closeConfirmationModal();
                 playAudio("click");
@@ -119,7 +124,7 @@ export const Shop = () => {
               Cancel
             </button>
             <button
-              className="px-2 py-1 bg-tripod text-sm"
+              className="px-2 py-1 bg-green-500 text-sm"
               onClick={() => {
                 onBuy();
                 closeConfirmationModal();
