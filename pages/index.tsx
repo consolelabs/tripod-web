@@ -22,7 +22,8 @@ const pointFormat = new Intl.NumberFormat().format;
 export default function Home() {
   const [parent, setParent] = useState<Postmate.ChildAPI>();
   const [play, setPlay] = useState(false);
-  const { game, renderCount, playAudio, isGameDone } = useGameContext();
+  const { game, renderCount, isGameDone, playAudio, toggleBgAudio } =
+    useGameContext();
 
   const {
     isBoardFull = false,
@@ -184,6 +185,7 @@ export default function Home() {
             <WelcomeScreen
               play={() => {
                 playAudio("start");
+                toggleBgAudio();
                 anim.addEventListener(
                   "finish",
                   () => {
