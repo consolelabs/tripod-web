@@ -81,7 +81,7 @@ const TripodPiece = ({
         width={200}
         height={200}
         alt="piece item"
-        className="aspect-square"
+        className="aspect-square object-contain"
       />
     </animated.div>
   ));
@@ -94,7 +94,6 @@ export const Board = ({ debug = false }: Props) => {
     selectedCells,
     hoveredCell,
     isGameDone,
-    isUpdating,
     put,
     use,
     swap,
